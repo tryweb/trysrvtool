@@ -1,0 +1,37 @@
+chkweblog 簡易說明
+
+1. 安裝環境: 
+	1.1 CentOS 5.x / 6.x Linux 作業系統
+	1.2 具有 perl 運行環境
+	
+2. 安裝方式: 
+	2.1 將 chkweblog.pl / chkweblog.set / chkweblog.conf 複製到 /opt/trysrvtool/ 目錄內
+	2.2 依照實際環境調整 chkweblog.conf 內容
+		2.2.1 $conf_logpath : 產生 web log 實際路徑, Exp. /var/www/html/log
+		2.2.2 $conf_logfiles : 需要分析的 log 檔名, Exp. 
+			2.2.2.1 $conf_logpath/* 表示所有檔案
+			2.2.2.2 $conf_logpath/access_log* $conf_logpath/ssl_access_log* 表示 access_log 與 ssl_access_log 開頭的檔案
+	2.3 依照實際環境調整 chkweblog.set 內容
+		2.3.1 # 開頭為註解, 會略過不處理
+		2.3.2 可自己增加需要找出 log 出現的關鍵字串
+		2.3.3 () 是最近 Shellshock Bash 的關鍵字串
+	2.4 給予 chkweblog.pl 執行權限 
+		chmod a+x /opt/trysrvtool/chkweblog.pl
+	
+3. 執行方式:
+	3.1 依據 log 檔案讀取權限使用, 如不確定就使用 root 身份執行
+	3.2 將分析結果輸出到指定檔案 Exp. /opt/trysrvtool/chkweblog.pl > /tmp/chkweblog.txt
+
+4. 輸出內容:
+	4.1 程式版本說明 Exp. 
+		# chkweblog.pl Ver 1.00 (2014/10/16) 表示 1.00 版, 開發日期為 2014/10/16
+	4.2 運行環境說明 Exp. 
+		Hostname:[xpc-ideas] Procdate:[2014-10-16 20:40] Taketime:[2]Sec.  表示運行主機名稱為 xpc-ideas, 執行時間為 2014-10-16 20:40, 處理時間為 2 秒
+	4.3 檢測關鍵字(沒有找到就不會列出) Exp.
+		Keyword#3 : [/main/images/info.php] 表示在 chkweblog.set 內 第三個 關鍵字 /main/images/info.php 有發現存取紀錄
+	4.4 檢測到的內容(分隔欄位使用 tab) Exp.
+		A.log檔案名稱	B.存取的IP	C.存取的日期時間	D.存取的模式	E.存取的網址	F.存取的結果編號
+		ssl_access_log-20140831 112.213.107.3   25/Aug/2014:16:40:58    GET     /main/images/info.php   200
+	4.5 使用 ----- 分隔行來區分關鍵字的檢測內容結果
+	4.6 使用 ===== 分隔行來結束整個輸出內容
+

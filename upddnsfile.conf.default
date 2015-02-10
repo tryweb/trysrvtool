@@ -1,0 +1,11 @@
+# 07:48 2008/10/4
+# Jonathan Tsai
+# Ver 1.00
+#
+# define these dns record info and get ip url for auto updateing to dns server
+# please rename this default config file upddnsfile.conf.default to upddnsfile.conf
+# and copy it into /opt/trysrvtool/
+#
+
+# dns_config_file	record_name	get_ip_url
+/var/named/chroot/var/named/data/named.ichiayi.com	server	http://www.ichiayi.com/250/trywebtool/getmyip.php?if=ppp0&mode=ip

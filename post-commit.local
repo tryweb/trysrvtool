@@ -1,0 +1,4 @@
+#!/bin/sh
+REPOS="$1"
+REV="$2"
+/opt/trysrvtool/svn2mantis.pl "$REPOS" "$REV"

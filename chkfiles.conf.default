@@ -1,0 +1,4 @@
+$conf_logpath = "/home/weblog/httpd_log/var/log/httpd";
+$conf_logfiles = "$conf_logpath/access_log* $conf_logpath/ssl_access_log*";
+
+1;

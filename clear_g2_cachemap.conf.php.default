@@ -1,0 +1,6 @@
+<?php
+$g_dbhost='127.0.0.1';
+$g_dbuser='root';
+$g_dbpasswd='xxxxxxxx';
+$g_dbname_arr=array('photos_lin', 'photos_lions', 'photos_sport', 'photos_volunteer', 'cyimc_photo');
+?>

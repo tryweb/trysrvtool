@@ -1,0 +1,37 @@
+# 13:54 2012/8/30
+# Jonathan Tsai
+# Ver 1.00
+#
+# defined svn control system config file list (CentOS)
+#
+
+/etc/aliases
+/etc/crontab
+/etc/exports
+/etc/fstab
+/etc/group
+/etc/hosts
+/etc/issue
+/etc/logrotate.conf
+/etc/modprobe.conf
+/etc/nsswitch.conf
+/etc/ntp.conf
+/etc/passwd
+/etc/php.ini
+/etc/resolv.conf
+/etc/sensors.conf
+/etc/services
+/etc/shadow
+/etc/smartd.conf
+/etc/sysctl.conf
+/etc/httpd/conf/httpd.conf
+/etc/mrtg/mrtg.cfg
+/etc/snmp/snmpd.conf
+/etc/ssh/ssh_config
+/etc/ssh/sshd_config
+/etc/sysconfig/iptables
+/etc/sysconfig/network
+/etc/sysconfig/network-scripts/ifcfg-eth0
+/etc/sysconfig/network-scripts/ifcfg-eth1
+/opt/trysrvtool/svnsysfile.conf
+

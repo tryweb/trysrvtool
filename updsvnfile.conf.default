@@ -1,0 +1,12 @@
+# 11:58 2012/8/30
+# Jonathan Tsai
+# Ver 1.01
+#
+# define these forders for auto commiting to svn server
+# please rename this default config file updsvnfile.conf.default to updsvnfile.conf
+# and copy it into /opt/trysrvtool/
+#
+
+# default define forder is / (root) and /root/$hostname
+#/opt/webserver/
+#/opt/trysrvtool/

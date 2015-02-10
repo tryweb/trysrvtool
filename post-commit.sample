@@ -1,0 +1,5 @@
+#!/bin/sh
+REPOS="$1"
+REV="$2"
+/opt/trysrvtool/svn2mantis.pl "$REPOS" "$REV" sys@172.16.60.245
+export LANG="en_US.UTF-8";/opt/trysrvtool/commit-email.pl "$REPOS" "$REV" --from sys@ichiayi.com -s "svn commit:" me@ichiayi.com

@@ -1,0 +1,14 @@
+$cmd_gzip = '/bin/gzip';
+$cmd_date = '/bin/date';
+$cmd_mysqldump = '/usr/bin/mysqldump';
+
+$g_expmysqlpath = "/mysqldump";
+$g_backupmode = 'both'; #'schema'
+$g_backupdblist = ''; #'mysql,xxx,yyy'
+$g_user = 'root';
+$g_password = 'passwd_1234';
+$g_dbhost = '127.0.0.1';
+$g_isgzip = 1; # using gzip compress
+$g_fileformat = 'database_'.`/bin/date '+%H'`.'.sql';
+
+1;

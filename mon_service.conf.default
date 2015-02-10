@@ -1,0 +1,11 @@
+# 06:51 2008/10/24
+# Jonathan Tsai
+# Ver 1.00
+#
+# define these service for monitoring
+# please rename this default config file mon_service.conf.default to mon_service.conf
+# and copy it into /opt/trysrvtool/
+#
+
+# service_name	check_ip	check_port	input_cmd	except_msg_keyword
+#dovecot	localhost	110	quit	OK	service dovecot restart

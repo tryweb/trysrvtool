@@ -1,0 +1,24 @@
+$conf_spool_mail = '/var/spool/mail/';
+$conf_home = '/home/';
+$conf_limitsize = 50000000; # 50 MBytes
+$conf_mailgroup = 'mail';
+$conf_mailmode = '600'; # -rw-------
+#$conf_check_id = ',jtsaiiii,lintsai,';
+
+$cmd_ls = '/bin/ls';
+$cmd_mv = '/bin/mv';
+$cmd_cp = '/bin/cp';
+$cmd_mkdir = '/bin/mkdir';
+$cmd_touch = '/bin/touch';
+$cmd_chown = '/bin/chown';
+$cmd_chmod = '/bin/chmod';
+
+$conf_SMTPServer = '127.0.0.1';
+$conf_MailDN = '@ichiayi.com';
+$conf_SYSUser = 'tryweb@ichiayi.com';
+$conf_contentType = 'text/plain;charset=big5';
+$conf_subject1 = "%%id%% MailBox is oversize(%%size%%), system is moving it to [%%folder%%] folder";
+$conf_subject2 = "%%id%% MailBox is moved to [%%folder%%] folder";
+$conf_toSYSUser = 1;
+
+1;

@@ -1,0 +1,3 @@
+# web_name      	check_url                               	keyword 	mail_to             	mail_subject            	post_header         	post_file
+#iServDB_Personal	http://iservdb.cloudopenlab.org.tw/xxxxx	xxxxxxxx	iservdb@ichiayi.com 	%%web_name%% Could be Down!
+#iServPaaS_Food 	http://iservpaas.cloudopenlab.org.tw/xxxx	xxxxxxxx	iservpaas@ichiayi.com	%%web_name%% Could be Down!	content-type: text/xml	test.xml

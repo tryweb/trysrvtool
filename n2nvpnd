@@ -1,0 +1,187 @@
+#!/bin/sh
+# written by A.Lang (alangDOThsuATgmailDOTcom)
+# modified by Jonathan Tsai (trywebATichiayiDOTcom) for CentOS5
+# Ver 1.10r (17:48 2010/4/20)
+#
+# n2nvpnd start|stop|status|restart
+# chkconfig: - 96 03
+# description: n2n VPN daemon
+
+# config: /etc/n2nvpnd.conf
+# pidfile: /var/lock/subsys/n2nvpn
+
+if ! [ -r /etc/n2nvpnd.conf ] ; then
+	 echo "ERROR: /etc/n2nvpnd.conf not found"
+	 exit 0
+fi
+source /etc/n2nvpnd.conf
+
+# Main code
+# Installation directory
+N2N_DIR=/opt/n2n
+N2N_SBIN=$N2N_DIR/sbin
+N2N_BIN=$N2N_DIR/bin
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+if ! [ -x $N2N_SBIN/edge ] ; then
+	 echo "ERROR: $N2N_SBIN/edge not found"
+	 exit 0
+elif ! [ -x $N2N_BIN/supernode ]; then
+	 echo "ERROR: $N2N_BIN/supernode not found"
+	 exit 0
+fi
+
+RETVAL=0
+
+start () {
+   # Check if n2n is already running.
+   PID=`ps ax | grep edge | grep -v 'grep' | awk '{print $1}'`
+   if [ ! -z "$PID" ]; then
+      echo "n2n VPN is already running."
+      PID=`ps ax | grep supernode | grep -v 'grep' | awk '{print $1}'`
+      if [ ! -z "$PID" ]; then
+   	  echo "n2n Supernode is already running."
+      fi
+      exit 1
+   fi
+
+   # start n2n supernode daemon
+   if [ $SNODE == "on" -o $SNODE == "ON" -o $SNODE == "On" ]; then
+	  echo -n "Starting n2n supernode:"
+	  daemon $N2N_BIN/supernode -l $SNODE_PORT >> $LOGS 2>&1 &
+	  RETVAL=$?
+	  if [ $RETVAL -eq 0 ]; then
+		 echo -e "\\033[60G\c"
+		 echo -e "[ \\033[1;32m\c"
+		 echo -e "OK\c"
+		 echo -e "\\033[0;39m\c"
+		 echo " ]"
+		 [ -d /var/locks/subsys ] && touch /var/lock/subsys/n2n_supernode
+	  else
+		 echo -e "\\033[60G\c"
+		 echo -e "[ \\033[1;31m\c"
+		 echo -e "FAILED\c"
+		 echo -e "\\033[0;39m\c"
+		 echo " ]"
+	  fi
+   fi
+
+   # start n2n VPN daemon
+   echo -n "Starting n2n VPN:"
+		 if [ $n2n_DHCP == "off" -o $n2n_DHCP == "Of" -o $n2n_DHCP == "OFF" ]; then
+			if [ -z "$SNODE_Backup" ]; then
+						daemon $N2N_SBIN/edge -f -d n2n0 -a $n2n_IP -c $n2n_cname -k $n2n_pass -l $SNODE_Host >> $LOGS 2>&1 &
+			else
+				if ! [ -r /usr/sbin/brctl ] ; then
+					 echo "ERROR: /usr/sbin/brctl not found"
+					 exit 0
+				fi
+						daemon $N2N_SBIN/edge -f -d n2n0 -a 0.0.0.0 -r -c $n2n_cname -k $n2n_pass -l $SNODE_Host >> $LOGS 2>&1 &
+						daemon $N2N_SBIN/edge -f -d n2n1 -a 0.0.0.0 -r -c $n2n_cname -k $n2n_pass -l $SNODE_Backup >> $LOGS 2>&1 &
+						# Add n2nbr0
+						RETSTR=`brctl show | grep n2nbr0`;
+						if [ -z "$RETSTR" ]; then
+							`brctl addbr n2nbr0`
+						fi
+						
+						RETSTR=`ifconfig | grep n2n1`
+						while [ -z "$RETSTR" ];
+						do
+							RETSTR=`ifconfig | grep n2n1`
+						done
+						
+						brctl addif n2nbr0 n2n0
+						brctl addif n2nbr0 n2n1
+						brctl stp n2nbr0 on
+						ifconfig n2nbr0 up
+						ip addr add $n2n_IP/24 dev n2nbr0
+			fi
+		 else
+						daemon $N2N_SBIN/edge -f -d n2n0 -a 0.0.0.0 -r -c $n2n_cname -k $n2n_pass -l $SNODE_Host >> $LOGS 2>&1 &
+						echo "************ dhclient logs - start ***************" >> $LOGS
+						dhclient n2n0 >> $LOGS 2>&1
+						echo "************ dhclient logs - end ***************" >> $LOGS
+		 fi
+
+   RETVAL=$?
+   if [ $RETVAL -eq 0 ]; then
+	  echo -e "\\033[60G\c"
+	  echo -e "[ \\033[1;32m\c"
+	  echo -e "OK\c"
+	  echo -e "\\033[0;39m\c"
+	  echo " ]"
+	  [ -d /var/locks/subsys ] && touch /var/lock/subsys/n2nvpn
+   else
+	  echo -e "\\033[60G\c"
+	  echo -e "[ \\033[1;31m\c"
+	  echo -e "FAILED\c"
+	  echo -e "\\033[0;39m\c"
+	  echo " ]"
+   fi
+
+   return $RETVAL
+}
+
+stop () {
+  # Stop n2n VPN daemons.
+  PID=`ps ax | grep edge | awk '{print $1}'`
+  echo -n "Shutting down n2n VPN: "
+  [ ! -z "$PID" ] && killproc edge
+		# If DHCP enabled, kill dhclient process
+		if ! [ $n2n_DHCP == "off" -o $n2n_DHCP == "Of" -o $n2n_DHCP == "OFF" ]; then
+						DHC_PID=`ps ax | grep 'dhclient\ n2n0' | awk '{print $1}'`
+						[ ! -z "$DHC_PID" ] && kill $DHC_PID
+		fi
+  RETVAL=$?
+  [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/n2nvpn
+
+  # Remove n2nbr0
+	if ! [ -z "$SNODE_Backup" ]; then
+		ifconfig n2nbr0 down
+		RETSTR=`brctl show | grep n2nbr0`;
+		if ! [ -z "$RETSTR" ]; then
+			brctl delbr n2nbr0
+		fi
+	fi
+
+  # Stop n2n supernode daemon.
+  if [ $SNODE == "on" -o $SNODE == "ON" -o $SNODE == "On" ]; then
+	 PID=`ps ax | grep supernode | awk '{print $1}'`
+	 echo
+	 echo -n "Shutting down n2n supernode:"
+	 [ ! -z "$PID" ] && killproc supernode
+	 [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/n2n_supernode
+  fi
+  echo
+  return $RETVAL
+}
+
+restart() {
+	stop
+	start
+}
+
+
+# See how we were called.
+case "$1" in
+  start)
+		start
+		;;
+  stop)
+		stop
+		;;
+  restart)
+		restart
+		;;
+  status)
+		status edge
+		[ $SNODE == "on" -o $SNODE == "ON" -o $SNODE == "On" ] && status supernode
+		;;
+  *)
+		echo "Usage: $0 {start|stop|status|restart}"
+		exit 1
+esac
+
+exit $?
