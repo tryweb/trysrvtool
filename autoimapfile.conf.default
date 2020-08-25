@@ -1,10 +1,17 @@
+# SVN Info - $Id: autoimapfile.conf.default 302 2017-06-11 15:59:59Z jonathan $
+
 $conf_spool_mail = '/var/spool/mail/';
 $conf_home = '/home/';
+$conf_imap_sub_dir = 'archive/'; # Archive to User IMAP Sub-Dir Exp. /home/jonathan/mail/archive/  
 $conf_limitsize = 50000000; # 50 MBytes
+#$conf_minratio = 80; # 80% of $conf_limitsize
+#$conf_keepdays = 3; # keep days mail, only supported by using archivemail 
 $conf_mailgroup = 'mail';
 $conf_mailmode = '600'; # -rw-------
+$conf_maildirmode = '700'; # drwx------
 #$conf_check_id = ',jtsaiiii,lintsai,';
 
+$cmd_archivemail = '/usr/bin/archivemail';
 $cmd_ls = '/bin/ls';
 $cmd_mv = '/bin/mv';
 $cmd_cp = '/bin/cp';

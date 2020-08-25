@@ -1,0 +1,9 @@
+# 11:48 2016/4/8
+# Modify to your real info and rename to chkiptables.conf
+#
+$conf_refFile = '/tmp/ipt.log';
+$conf_toMail = 'you@yourmail.com';
+$conf_fromMail = 'admin@yourmail.com';
+$conf_chkCmd = '/sbin/iptables --list -n';
+
+1;

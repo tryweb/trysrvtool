@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 #
-# 11:08 2009/3/3
+# 23:16 2018/07/21
 # Jonathan Tsai
-# Ver 1.03
+# Ver 1.04
 #
 # 自動匯出 svn 專案目錄資料
 #
@@ -10,9 +10,10 @@
 # 1.01 (2007/3/14) 更改 SVN 目錄
 # 1.02 (2008/3/1) 增加匯出後用 gzip 壓縮
 # 1.03 (2009/3/3) 增加匯出前先 verify 並比對之前匯出的版本編號決定是否需要匯出
+# 1.04 (2018/7/21) 修改誤判 svnpath 內非 svn 目錄或檔案處理異常出現問題
 
 $prgname = substr($0, rindex($0,"/")+1);
-$ver = "1.03 (2009/3/3)";
+$ver = "1.04 (2018/7/21)";
 $svnpath = "/var/www/svn";
 $expsvnpath = "/data/db_dump/svn_data";
 $skipdirlist = ".;..;"; # 排除匯出的 svn 目錄清單 (abc;xxx;)
@@ -30,18 +31,32 @@ foreach $svndir (@svndirlist) {
 		$max=0;
 		foreach $line (split(/\n/, `/usr/bin/svnadmin verify $svnpath/$svndir 2>&1`)) {
 			($a1, $a2, $a3, $svn_no) = split(/ /,$line);
-			$svn_no =~ s/\.//g;
-			$max = ($svn_no>$max)?$svn_no:$max;
+			# svnadmin: E000020: 無法開啟檔案 
+			# svnadmin: E000002: 無法開啟檔案
+			if ($a1 eq 'svnadmin:') {
+				$max=-1;
+				last;
+			}
+			else {
+				$svn_no =~ s/\.//g;
+				$max = ($svn_no>$max)?$svn_no:$max;
+			}
 		}
-		print("$max\n");
-		if (chkSVNVer($expsvnpath, $svndir, $max)) {
-			print("$nowmsg Exporting [$svndir]...");
-			`/usr/bin/svnadmin dump -q $svnpath/$svndir | gzip -9> $expsvnpath/$svndir.svn.gz`;
-			`echo -n $max > $expsvnpath/$svndir.verno`;
-			print("OK!\n");
+		if ($max<0) {
+			print("Skip!\n");
+			next;
 		}
 		else {
-			print("$nowmsg Already Exported\n");
+			print("$max\n");
+			if (chkSVNVer($expsvnpath, $svndir, $max)) {
+				print("$nowmsg Exporting [$svndir]...");
+				`/usr/bin/svnadmin dump -q $svnpath/$svndir | gzip -9> $expsvnpath/$svndir.svn.gz`;
+				`echo -n $max > $expsvnpath/$svndir.verno`;
+				print("OK!\n");
+			}
+			else {
+				print("$nowmsg Already Exported\n");
+			}
 		}
 	}
 }

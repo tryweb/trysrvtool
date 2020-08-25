@@ -1,13 +1,17 @@
 #!/usr/bin/perl -w
 # 
 # Add Mail User script
-# Ver 1.00
-# 2005/8/18 下午 05:23
+# Ver 1.01
+# 11:09 2015/5/12
 # Jonathan Tsai
 #
 # 1.00(2005/8/18) 第一版上線
+# 1.01(2015/5/12) 增加檢查建立 INBOX 目錄
+#
+# SVN Info - $Id: addmailuser.pl 294 2016-11-06 05:15:57Z jonathan $
+#
 
-my $sysver = "1.00(2005/8/18)";
+my $sysver = "1.01(2015/5/12)";
 print("AddMailUser Script Ver $sysver \n");
 
 # Check Mail User Group
@@ -41,10 +45,14 @@ if ($uid <= 500 || $uid > 1000) {
 $cmdline = "/usr/sbin/useradd -g mailuser -s /bin/false -u $uid -c \"$realname\" $userid";
 $cmdresult = `$cmdline`;
 
+$cmdline = "/bin/mkdir -p ~$userid/mail/.imap/INBOX";
+$cmdresult = `$cmdline`;
+$cmdline = "/bin/chown -R $userid:mailuser ~$userid/mail";
+$cmdresult = `$cmdline`;
+
 $cmdline = "/usr/bin/tail /etc/passwd | /bin/grep $userid";
 $cmdresult = `$cmdline`;
 if (length($cmdresult)>0) {
 	print("Add Mail User [$userid] OK!\n");
 }
-
 
